@@ -4,11 +4,6 @@ import java.awt.event.WindowEvent;
 
 public class WindowListener implements java.awt.event.WindowListener{
 
-//        @Override
-//        public void windowOpened(WindowEvent we) {
-//            System.out.println("Window opened");
-//        }
-
     @Override
     public void windowOpened(WindowEvent e) {
 

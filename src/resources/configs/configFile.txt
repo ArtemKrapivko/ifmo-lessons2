@@ -1,2 +1,0 @@
-PATH_PRODUCTS=src\\resources\\files\\product.csv
-DISCOUNT_VALUE=10

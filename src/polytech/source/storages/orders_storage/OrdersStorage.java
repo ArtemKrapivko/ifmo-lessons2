@@ -23,37 +23,47 @@ import static resources.configs.Config.PATH_ORDERS;
 
 public class OrdersStorage {
 
-    public void createOrder(Order create) throws IOException {
-        Set<BasicFileAttributes> params = new HashSet<>();
-        Path savePath = Paths.get(PATH_ORDERS);
-
-        if (Files.exists(savePath)) {
-            System.out.println("File is exist");
-        } else {
-            Files.createFile(savePath);
-        }
-    }
-
-    public void saveOrders(List<Order> orders) throws IOException {
+    public void saveOrders(List<Order> orders, String path_to_orders) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(PATH_ORDERS))) {
             oos.writeObject(orders);
         }
     }
 
-
-//        Path myPath = Paths.get(PATH_ORDERS);
-//        List<String> line = new ArrayList<>();
-//        Files.write(myPath, line, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
-//        System.out.println("Data written");
+//    public List<Order> loadOrders() throws IOException, ClassNotFoundException {
+//        try (ObjectInputStream ois = new ObjectInputStream(
+//                new FileInputStream(PATH_ORDERS))) {
+//            return (List<Order>) ois.readObject();
+//        }
 //    }
 
 
-    public List<Order> loadOrders() throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(PATH_ORDERS))) {
-            return (List<Order>) ois.readObject();
+    public List<Order> loadOrdersWithDeserialization(String filePath) throws IOException, ClassNotFoundException {
+        if (Files.exists(Paths.get(PATH_ORDERS))) {
+            try (ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream(filePath))) {
+                return (List<Order>) ois.readObject();
+            }
+        } else {
+            return new ArrayList<>();
         }
     }
+
+
+//
+//
+//    public List<Order> loadOrderFromFile(String filePath) throws IOException {
+//        List<Order> listOrder = new ArrayList<>();
+//        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+//            while (reader.ready()) {
+//                String row = reader.readLine();
+//                String[] splittedRow = row.split(";");
+//                Order o = new Order(Date.valueOf(splittedRow[0]), splittedRow[1], splittedRow[2], BigDecimal.valueOf(Long.parseLong(splittedRow[3])), Integer.valueOf(splittedRow[4]));
+//                listOrder.add(o);
+//            }
+//        }
+//
+//        return listOrder;
+//    }
 }
 

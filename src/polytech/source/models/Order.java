@@ -1,21 +1,26 @@
 package polytech.source.models;
 
-import java.time.LocalDate;
+import javafx.scene.control.DatePicker;
 
-public class Order {
+import java.io.Serializable;
+import java.util.Date;
+
+public class Order implements Serializable {
+    private static final long serialVersionUID = 1L;
 
 
-    private LocalDate dateCreateOrder;
+    private Date dateCreateOrder;
     private String fioCustomer;
-    private int customerPhone;
+    private String customerPhone;
     private String customerAddress;
-    private int discount;
+    private String discount;
     private OrderStatus orderStatus;
-    private LocalDate dateSendOrder;
-    private OrderPosition OrderPosition; //OrderPosition - product, price, quantity
+    private Date dateSendOrder;
+    private polytech.source.models.OrderPosition OrderPosition; //OrderPosition - product, price, quantity
 
 
-    public Order(LocalDate dateCreateOrder, String fioCustomer, int customerPhone, String customerAddress, int discount, OrderStatus orderStatus, LocalDate dateSendOrder, OrderPosition orderPosition) {
+    public Order(Date dateCreateOrder, String fioCustomer, String customerPhone, String customerAddress,
+                 String discount, OrderStatus orderStatus, Date dateSendOrder, OrderPosition orderPosition) {
         this.dateCreateOrder = dateCreateOrder;
         this.fioCustomer = fioCustomer;
         this.customerPhone = customerPhone;
@@ -26,11 +31,57 @@ public class Order {
         OrderPosition = orderPosition;
     }
 
-    public LocalDate getDateCreateOrder() {
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dateCreateOrder.toString());
+        sb.append(";");
+        sb.append(fioCustomer);
+        sb.append(";");
+        sb.append(customerPhone);
+        sb.append(";");
+        sb.append(customerAddress);
+        sb.append(";");
+        sb.append(discount);
+        sb.append(";");
+        sb.append(orderStatus);
+        sb.append(";");
+        sb.append(dateSendOrder.toString());
+        sb.append(";");
+        sb.append(OrderPosition);
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (o instanceof Order) {
+            Order obj = (Order) o;
+            if (obj.dateCreateOrder == this.dateCreateOrder
+                    && obj.fioCustomer.equals(this.fioCustomer)
+                    && obj.customerPhone.equals(this.customerPhone)
+                    && obj.customerAddress == (this.customerAddress)
+                    && obj.discount == (this.discount)
+                    && obj.orderStatus == (this.orderStatus)
+                    && obj.dateSendOrder == (this.dateSendOrder)
+                    && obj.OrderPosition == (this.OrderPosition)){
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+
+    }
+
+    public Date getDateCreateOrder() {
         return dateCreateOrder;
     }
 
-    public void setDateCreateOrder(LocalDate dateCreateOrder) {
+    public void setDateCreateOrder(Date dateCreateOrder) {
         this.dateCreateOrder = dateCreateOrder;
     }
 
@@ -42,11 +93,11 @@ public class Order {
         this.fioCustomer = fioCustomer;
     }
 
-    public int getCustomerPhone() {
+    public String getCustomerPhone() {
         return customerPhone;
     }
 
-    public void setCustomerPhone(int customerPhone) {
+    public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
     }
 
@@ -58,11 +109,11 @@ public class Order {
         this.customerAddress = customerAddress;
     }
 
-    public int getDiscount() {
+    public String getDiscount() {
         return discount;
     }
 
-    public void setDiscount(int discount) {
+    public void setDiscount(String discount) {
         this.discount = discount;
     }
 
@@ -70,21 +121,24 @@ public class Order {
         return orderStatus.toString(); //вызываю элементы
     }
 
-    public LocalDate getDateSendOrder() {
+    public Date getDateSendOrder() {
         return dateSendOrder;
     }
 
-    public void setDateSendOrder(LocalDate dateSendOrder) {
+    public void setDateSendOrder(Date dateSendOrder) {
         this.dateSendOrder = dateSendOrder;
     }
 
-    public OrderPosition getOrderPosition() {
+    public polytech.source.models.OrderPosition getOrderPosition() {
         return OrderPosition;
     }
 
     public void setOrderPosition(OrderPosition orderPosition) {
         OrderPosition = orderPosition;
     }
+
+
+
 
 //    @Override
 //    public List<Orders> loadObjects(String path) throws IOException {

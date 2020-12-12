@@ -2,10 +2,10 @@ package polytech.source.models;
 
 public class OrderPosition{
     private String product;
-    private float price;
+    private double price;
     private int quantity;
 
-    public OrderPosition(String product, Float price, int quantity) {
+    public OrderPosition(String product, double price, int quantity) {
         this.product = product;
         this.price = price;
         this.quantity = quantity;
@@ -19,7 +19,7 @@ public class OrderPosition{
         this.product = product;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
