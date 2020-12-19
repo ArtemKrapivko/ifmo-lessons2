@@ -32,7 +32,8 @@ public class ProductsStorage {
 
     public List<Product> loadProductsFromFile(String filePath) throws IOException {
         List<Product> listPproducts = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String f = new File("").getAbsolutePath() + '\\' + filePath;
+        try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
             String row;
             while ((row = reader.readLine()) != null) {
                 String[] splittedRow = row.split(";");
