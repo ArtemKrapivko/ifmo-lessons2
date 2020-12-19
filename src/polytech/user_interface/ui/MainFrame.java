@@ -37,6 +37,7 @@ public class MainFrame extends JFrame {
 
         JMenuBar mb = new JMenuBar();
         JMenu m = new JMenu("Продукты/Ордера");
+        m.setForeground(Color.RED);
         JMenuItem mi;
 
         JMenuItem miLoad = new JMenuItem("Загрузить продукты из файла");

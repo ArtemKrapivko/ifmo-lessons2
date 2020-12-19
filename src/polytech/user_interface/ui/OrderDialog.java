@@ -57,11 +57,11 @@ public class OrderDialog extends JDialog {
         p.add(customerAddress);
         topPanel.add(p);
 
-//        p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//        p.add(new JLabel("Скидка "));
-//        discount = new JTextField(10);
-//        p.add(discount);
-//        topPanel.add(p);
+        p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        p.add(new JLabel("Скидка "));
+        discount = new JTextField(10);
+        p.add(discount);
+        topPanel.add(p);
 
         p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.add(new JLabel("Позиции заказа "));
