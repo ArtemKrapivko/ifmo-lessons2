@@ -18,34 +18,26 @@ public class OrdersController {
 
 
     public void add(String fioCustomer, String customerPhone, String customerAddress, String discount,
-                    OrderStatus orderStatus, OrderPosition orderPosition) {
-//        if(numbers.contains(num))
-//            throw new IllegalArgumentException("Phone number is already registered.");
-
-        orders.add(new Order(new Date(), fioCustomer, customerPhone, customerAddress, discount, orderStatus,
-                new Date(), orderPosition));
-    }
-
-
-    public OrdersController() throws IOException, ClassNotFoundException {
-    }
-
-        public List<Order> loadOrders() {
-        try {
-            return ordersStorage.loadOrdersWithDeserialization(Config.PATH_ORDERS);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+                    OrderStatus orderStatus, List<OrderPosition> orderPositionList) {
+        int amountProducts = 0;
+        for (OrderPosition op : orderPositionList) {
+            amountProducts += op.getQuantity();
         }
+        orders.add(new Order(new Date(), fioCustomer, customerPhone, customerAddress, discount, amountProducts, orderStatus,
+                new Date(), orderPositionList));
+    }
+
+    public List<Order> loadOrders() {
+        return ordersStorage.loadOrdersWithDeserialization(Config.PATH_ORDERS);
     }
 
     public void remove(int index) {
         Order c = orders.remove(index);
-        order.remove(c.getOrderPosition());
     }
 
 
     public void save() throws IOException {
-        ordersStorage.saveOrders(orders, Config.PATH_ORDERS);
+        ordersStorage.saveOrders(orders);
     }
 
     public int getOrdersCount() {

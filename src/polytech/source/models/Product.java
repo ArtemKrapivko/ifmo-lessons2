@@ -1,7 +1,9 @@
 package polytech.source.models;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Product {
+public class Product implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private long vendorCode;
     private String productName;
@@ -25,8 +27,6 @@ public class Product {
         sb.append(productName);
         sb.append(";");
         sb.append(productPrice.toString());
-        sb.append(";");
-        sb.append(stockQuantity);
         return sb.toString();
     }
 

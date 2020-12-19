@@ -23,6 +23,7 @@ public class OrdersTableModel implements TableModel {
             "Телефон покупателя",
             "Адрес доставки",
             "Скидка",
+            "Количество товара",
             "Статус заказа",
             "Дата отправки заказа",
             "Позиции заказа"
@@ -35,6 +36,7 @@ public class OrdersTableModel implements TableModel {
             Integer.class,
             String.class,
             Integer.class,
+            String.class,
             String.class,
             Date.class,
             String.class,
@@ -83,10 +85,19 @@ public class OrdersTableModel implements TableModel {
             case 2: return o.getCustomerPhone();
             case 3: return o.getCustomerAddress();
             case 4: return o.getDiscount();
-            case 5: return o.getOrderStatus();
-            case 6: return o.getDateSendOrder();
-            case 7: return o.getOrderPosition();
+            case 5: return o.getAmountProducts();
+            case 6: return o.getOrderStatus();
+            case 7: return o.getDateSendOrder();
+            case 8:
+                StringBuilder sb = new StringBuilder();
+                for (OrderPosition op : o.getOrderPositionList()) {
+                    sb.append(op.getProduct().toString());
+                    sb.append("\r");
+                }
+
+                return sb.toString();
             default: return null;
+
         }
     }
 
@@ -112,35 +123,34 @@ public class OrdersTableModel implements TableModel {
     }
 
     public void addOrders(String fioCustomer, String customerPhone,
-                          String customerAddress, String discount, OrderStatus orderStatus, OrderPosition orderPosition) {
-        oc.add(fioCustomer, customerPhone, customerAddress, discount, orderStatus, orderPosition);
+                          String customerAddress, String discount,
+                          OrderStatus orderStatus, List<OrderPosition> orderPositionList) {
+        oc.add(fioCustomer, customerPhone, customerAddress, discount, orderStatus, orderPositionList);
         int rowNum = oc.getOrdersCount() - 1;
         fireTableModelEvent(new TableModelEvent(this, rowNum, rowNum,
                 TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
     }
 
-    public void editOrders(int index, Date dateCreateOrder, String fioCustomer, String customerPhone,
-                           String customerAddress, String discount, String orderStatus, Date dateSendOrder,
-                           OrderPosition OrderPosition) {
+    public void editOrder(int index, String fioCustomer, String customerPhone,
+                           String customerAddress, String discount,  List<OrderPosition> selectedProducts) {
         Order eo = oc.getOrder(index);
-        eo.setDateCreateOrder(dateCreateOrder);
         eo.setFioCustomer(fioCustomer);
         eo.setCustomerPhone(customerPhone);
         eo.setCustomerAddress(customerAddress);
         eo.setDiscount(discount);
-        eo.setDateSendOrder(dateSendOrder);
-        eo.setOrderPosition(OrderPosition); //поправить на выпадающий список???
+        eo.setOrderPositionList(selectedProducts);
+        int newAmountProducts = 0;
+        for(OrderPosition op : selectedProducts) {
+            newAmountProducts += op.getQuantity();
+        }
+        eo.setAmountProducts(newAmountProducts);
 
         fireTableModelEvent(new TableModelEvent(this,
                 TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
     }
 
-
-//    public void deleteOrders(int index) {
-//        OrdersController.remove(index);
-//        fireTableModelEvent(new TableModelEvent(this, index, index,
-//                TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE));
-//    }
-
-
+    public void update(int row) {
+        fireTableModelEvent(new TableModelEvent(this,row, row,
+                TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
+    }
 }

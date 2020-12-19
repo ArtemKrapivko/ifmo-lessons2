@@ -1,12 +1,11 @@
 package polytech.user_interface.ui;
 
-import javafx.scene.control.DatePicker;
 import polytech.source.controllers.OrdersController;
 import polytech.source.controllers.ProductController;
+import polytech.source.models.Order;
 import polytech.source.models.OrderPosition;
 import polytech.source.models.OrderStatus;
 import polytech.user_interface.uimodels.OrdersTableModel;
-import polytech.user_interface.uimodels.ProductsTableModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,26 +14,21 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public class MainFrame extends JFrame {
     private ProductController pc = new ProductController();
     private OrdersController oc = new OrdersController();
 
-    //    private ProductsTableModel productsTableModel;
     private final OrdersTableModel ordersTableModel;
     private JTable mainTable;
 
     public MainFrame() throws IOException, ClassNotFoundException {
         super("Продажа и учёт товаров");
-        setBounds(300, 200, 900, 600);
+        setBounds(300, 200, 900, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         Container c = getContentPane();
-//        this.productsTableModel = new ProductsTableModel(pc);
-//        mainTable = new JTable(this.productsTableModel);
         this.ordersTableModel = new OrdersTableModel(oc);
         mainTable = new JTable(this.ordersTableModel);
 
@@ -49,18 +43,20 @@ public class MainFrame extends JFrame {
         miLoad.addActionListener(this::loadProductsFromFile);
         m.add(miLoad);
 
-        //
         mi = new JMenuItem("Добавить новый заказ");
-        //mi.addActionListener(e -> addClient());
         mi.addActionListener(this::addNewOrder);
         m.add(mi);
 
         mi = new JMenuItem("Изменить заказ");
-//        mi.addActionListener(e -> editOrder());
+        mi.addActionListener(this::editOrder);
         m.add(mi);
-//
-        mi = new JMenuItem("Удалить заказ");
-//        mi.addActionListener(e -> deleteOrder());
+
+        mi = new JMenuItem("Отменить заказ");
+        mi.addActionListener(e -> canceldOrder());
+        m.add(mi);
+
+        mi = new JMenuItem("Отправить заказ");
+        mi.addActionListener(this::shipOrder);
         m.add(mi);
 
 
@@ -77,8 +73,7 @@ public class MainFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 try {
                     pc.save();
-//                    pc.saveToCSVFile();
-                    pc.save();
+                    oc.save();
                 } catch (IOException exception) {
                     throw new RuntimeException("Не удалось сохранить файл");
                 }
@@ -112,39 +107,49 @@ public class MainFrame extends JFrame {
     }
 
     private void loadProductsFromFile(ActionEvent ee) {
-        JFileChooser fileopen = new JFileChooser();
-        int ret = fileopen.showDialog(null, "Открыть файл");
-        File file = null;
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            file = fileopen.getSelectedFile();
-        }
-        if (file == null) {
-            return;
-        }
-        try {
-            pc.loadProductFromUserFile(file.getAbsolutePath());
-//            ProductsTableModel.addProducts();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Object[] options = {"Да","Нет"};
+        // Если нажали на кнопку Да, n == 0, иначе 1
+        int n = JOptionPane.showOptionDialog(this,
+                "Текущий список продуктов будет заменён, продолжить?",
+                "Загрузка продуктов",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        if (n == 0) {
+            JFileChooser fileopen = new JFileChooser();
+            int ret = fileopen.showDialog(null, "Открыть файл");
+            File file = null;
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                file = fileopen.getSelectedFile();
+            }
+            if (file == null) {
+                return;
+            }
+            try {
+                pc.loadProductFromUserFile(file.getAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private void addNewOrder(ActionEvent ee) {
-        OrderDialog dlg = new OrderDialog(this);
+        OrderDialog dlg = new OrderDialog(this, pc);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
         if(dlg.isModalResult()) {
-//            String LocalDate = dlg.getLocalDate();
             String fioCustomer = dlg.getFioCustomer();
             String customerPhone = dlg.getCustomerPhone();
             String customerAddress = dlg.getCustomerAddress();
             String discount = dlg.getDiscount();
-            OrderStatus orderStatus = OrderStatus.getStatusFromString(dlg.getOrderStatus());
-//            String dateSendOrder = dlg.getDateSendOrder();
-            String orderPosition = dlg.getOrderPosition();
+
+            List<OrderPosition> orderPositionList = dlg.getOrderPositionList();
             try {
                 ordersTableModel.addOrders(fioCustomer,customerPhone,customerAddress,
-                        discount,orderStatus,new OrderPosition(orderPosition,3,3));
+                        discount,OrderStatus.READY,orderPositionList);
             } catch(Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
                         "Error adding Order", JOptionPane.ERROR_MESSAGE);
@@ -152,42 +157,67 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void add(DatePicker localDate) {
-        DatePicker datePicker = new DatePicker();
-        datePicker.setValue(LocalDate.now());
-//        datePicker.setClearButtonVisible(true);
-        add(datePicker);
+    private void editOrder(ActionEvent ee) {
+        int row = mainTable.getSelectedRow();
+        if(row == -1)
+            return;
+        Order order = oc.getOrder(row);
+        if (!OrderStatus.READY.toString().equals(order.getOrderStatus())) {
+            JOptionPane.showMessageDialog(this, "Заказ не может быть изменён",
+                    "Error adding Order", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        OrderDialog dlg = new OrderDialog(this,pc, order);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+        if(dlg.isModalResult()) {
+            ordersTableModel.editOrder(row, dlg.getFioCustomer(), dlg.getCustomerPhone(),
+                    dlg.getCustomerAddress(), dlg.getDiscount(), dlg.getOrderPositionList());
+
+        }
+        ordersTableModel.update(row);
     }
 
-//todo
-//    private void editOrder() {
-//        int row = mainTable.getSelectedRow();
-//        if(row == -1)
-//            return;
-//        OrderDialog dlg = new OrderDialog(this);
-//        dlg.setLocationRelativeTo(this);
-//        dlg.setVisible(true);
-//        if(dlg.isModalResult()) {
-//            ordersTableModel.editOrders(row,dlg.getLocalDate(), dlg.getFioCustomer(),dlg.getCustomerPhone(),
-//                    dlg.getCustomerAddress(),dlg.getDiscount(),dlg.getOrderStatus(),dlg.getDateSendOrder(),
-//                    dlg.getOrderPosition());
-//        }
-//    }
+    private void shipOrder(ActionEvent ee) {
+        int row = mainTable.getSelectedRow();
+        if(row == -1)
+            return;
+        Order order = oc.getOrder(row);
+        if (OrderStatus.READY.toString().equals(order.getOrderStatus())) {
+            for (OrderPosition op : order.getOrderPositionList()) {
+                pc.decreaseProductAmount(op.getProduct(), op.getQuantity());
+            }
+            order.setOrderStatus(OrderStatus.DELIVERED);
+            JOptionPane.showMessageDialog(this, "Заказ выполнен!",
+                    "Error adding Order", JOptionPane.OK_OPTION);
+        } else if (OrderStatus.CANCEL.toString().equals(order.getOrderStatus())) {
+            JOptionPane.showMessageDialog(this, "Заказ уже отменён!",
+                    "Error adding Order", JOptionPane.ERROR_MESSAGE);
+        } else if (OrderStatus.DELIVERED.toString().equals(order.getOrderStatus())) {
+            JOptionPane.showMessageDialog(this, "Заказ уже доставлен!",
+                    "Error adding Order", JOptionPane.ERROR_MESSAGE);
+        }
+        ordersTableModel.update(row);
 
+    }
 
-//todo
-//    private void deleteOrder() {
-//        int row = mainTable.getSelectedRow();
-//        if(row == -1)
-//            return;
-//        String phNum = OrdersController.getOrder(row).getNumber().toString();
-//        if(JOptionPane.showConfirmDialog(this,
-//                "Are you sure you want to delete a record about " + phNum + "?",
-//                "Delete confirmation",
-//                JOptionPane.YES_NO_OPTION,
-//                JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-//            ordersTableModel.deleteOrders(row);
-//        }
-//    }
+    private void canceldOrder() {
+        int row = mainTable.getSelectedRow();
+        if(row == -1)
+            return;
+        Order order = oc.getOrder(row);
+        if (OrderStatus.READY.toString().equals(order.getOrderStatus())) {
+            order.setOrderStatus(OrderStatus.CANCEL);
+            JOptionPane.showMessageDialog(this, "Заказ отменён!",
+                    "Error adding Order", JOptionPane.OK_OPTION);
+        } else if (OrderStatus.CANCEL.toString().equals(order.getOrderStatus())) {
+            JOptionPane.showMessageDialog(this, "Заказ уже отменён",
+                    "Error adding Order", JOptionPane.ERROR_MESSAGE);
+        } else if (OrderStatus.DELIVERED.toString().equals(order.getOrderStatus())) {
+            JOptionPane.showMessageDialog(this, "Заказ доставлен и не может быть отменён",
+                    "Error adding Order", JOptionPane.ERROR_MESSAGE);
+        }
+        ordersTableModel.update(row);
+    }
 
 }

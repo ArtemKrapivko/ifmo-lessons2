@@ -5,7 +5,9 @@ import polytech.source.storages.products_storage.ProductsStorage;
 import resources.configs.Config;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ProductController {
@@ -23,7 +25,7 @@ public class ProductController {
 
 
     public List<Product> loadProductFromUserFile(String pathToFile) throws IOException {
-        products.addAll(productStorage.loadProductsFromFile(pathToFile));
+        this.products = productStorage.loadProductsFromFile(pathToFile);
         return this.products;
     }
 
@@ -33,5 +35,36 @@ public class ProductController {
 
     public Product getProduct(int index) {
         return products.get(index);
+    }
+
+    public Object[] getProductsForChooseList() {
+        Object[] result = new Object[products.size()];
+
+        for (int i = 0; i < result.length; i++) {
+            Product p = products.get(i);
+            if (p.getStockQuantity() > 0) {
+                result[i] = p.getVendorCode() + "; " + p.getProductName() + ";  " + p.getProductColor() + ";  " + p.getProductPrice();
+            }
+        }
+
+        return result;
+    }
+
+    public Product searchProductByVendorCode(long vendorCoder) {
+        for(Product p : products) {
+            if(p.getVendorCode() == vendorCoder) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void decreaseProductAmount(Product p, int numberToDecrease) {
+        int currentStockQuantity = p.getStockQuantity();
+        if (currentStockQuantity - numberToDecrease < 0) {
+            throw new RuntimeException(
+                    String.format("Попытка уменьшить количество товара на величину большую чем на складе\nПродукт %s", p.toString()));
+        }
+        p.setStockQuantity(currentStockQuantity - numberToDecrease);
     }
 }

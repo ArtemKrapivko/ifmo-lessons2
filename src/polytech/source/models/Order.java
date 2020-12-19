@@ -3,32 +3,37 @@ package polytech.source.models;
 import javafx.scene.control.DatePicker;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
-
 
     private Date dateCreateOrder;
     private String fioCustomer;
     private String customerPhone;
     private String customerAddress;
     private String discount;
-    private OrderStatus orderStatus;
-    private Date dateSendOrder;
-    private polytech.source.models.OrderPosition OrderPosition; //OrderPosition - product, price, quantity
+    private int amountProducts;
 
+    private OrderStatus orderStatus;
+
+    private Date dateSendOrder;
+    private List<OrderPosition> orderPositionsList;
 
     public Order(Date dateCreateOrder, String fioCustomer, String customerPhone, String customerAddress,
-                 String discount, OrderStatus orderStatus, Date dateSendOrder, OrderPosition orderPosition) {
+                 String discount, int amountProducts, OrderStatus orderStatus, Date dateSendOrder, List<OrderPosition> orderPositionList) {
         this.dateCreateOrder = dateCreateOrder;
         this.fioCustomer = fioCustomer;
         this.customerPhone = customerPhone;
         this.customerAddress = customerAddress;
         this.discount = discount;
+        this.amountProducts = amountProducts;
         this.orderStatus = orderStatus;
         this.dateSendOrder = dateSendOrder;
-        OrderPosition = orderPosition;
+        this.orderPositionsList = orderPositionList;
     }
 
     @Override
@@ -44,11 +49,13 @@ public class Order implements Serializable {
         sb.append(";");
         sb.append(discount);
         sb.append(";");
+        sb.append(amountProducts);
+        sb.append(";");
         sb.append(orderStatus);
         sb.append(";");
         sb.append(dateSendOrder.toString());
         sb.append(";");
-        sb.append(OrderPosition);
+        sb.append(orderPositionsList);
         return sb.toString();
     }
 
@@ -63,9 +70,10 @@ public class Order implements Serializable {
                     && obj.customerPhone.equals(this.customerPhone)
                     && obj.customerAddress == (this.customerAddress)
                     && obj.discount == (this.discount)
+                    && obj.amountProducts == (this.amountProducts)
                     && obj.orderStatus == (this.orderStatus)
                     && obj.dateSendOrder == (this.dateSendOrder)
-                    && obj.OrderPosition == (this.OrderPosition)){
+                ) {
                 return true;
             } else {
                 return false;
@@ -113,8 +121,16 @@ public class Order implements Serializable {
         return discount;
     }
 
+    public int getAmountProducts() {
+        return amountProducts;
+    }
+
     public void setDiscount(String discount) {
         this.discount = discount;
+    }
+
+    public void setAmountProducts(int amountProducts) {
+        this.amountProducts = amountProducts;
     }
 
     public String getOrderStatus() {
@@ -129,35 +145,18 @@ public class Order implements Serializable {
         this.dateSendOrder = dateSendOrder;
     }
 
-    public polytech.source.models.OrderPosition getOrderPosition() {
-        return OrderPosition;
+    public List<OrderPosition> getOrderPositionList() {
+        return orderPositionsList;
     }
 
-    public void setOrderPosition(OrderPosition orderPosition) {
-        OrderPosition = orderPosition;
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public void setOrderPositionList(List<OrderPosition> selectedProducts) {
+        this.orderPositionsList = selectedProducts;
     }
 
 
-
-
-//    @Override
-//    public List<Orders> loadObjects(String path) throws IOException {
-//        List<Orders> ordersList = new ArrayList<>(); //создаем список пустой
-//        FileReader reader = new FileReader(path);
-//        BufferedReader bufferedReader = new BufferedReader(reader);
-//        while (bufferedReader.ready()) {
-//            String row = bufferedReader.readLine();
-//            String[] splittedRow = row.split(";",6); //из списка продуктов получил элементы
-////            long vendorCode = Long.valueOf(splittedRow[0]);
-////            String productName = splittedRow[1];
-////            String productColor = splittedRow[2];
-////            BigDecimal productPrice = new BigDecimal(splittedRow[3]);
-////            int stockQuantity = Integer.valueOf(splittedRow[4]);
-////            Product orders = new Product(vendorCode, productName, productColor, productPrice, stockQuantity);
-////            ordersList.add(orders);
-//        }
-//        bufferedReader.close();
-//        return ordersList;
-//    }
 }
 
