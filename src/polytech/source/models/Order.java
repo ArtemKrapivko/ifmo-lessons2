@@ -1,10 +1,6 @@
 package polytech.source.models;
 
-import javafx.scene.control.DatePicker;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -66,13 +62,13 @@ public class Order implements Serializable {
         } else if (o instanceof Order) {
             Order obj = (Order) o;
             if (obj.dateCreateOrder == this.dateCreateOrder
-                    && obj.fioCustomer.equals(this.fioCustomer)
+                    && obj.fioCustomer.equals(this.fioCustomer) //или здесь проверку (вместо сеттера)
                     && obj.customerPhone.equals(this.customerPhone)
-                    && obj.customerAddress == (this.customerAddress)
-                    && obj.discount == (this.discount)
+                    && obj.customerAddress.equals (this.customerAddress)
+                    && obj.discount.equals (this.discount)
                     && obj.amountProducts == (this.amountProducts)
-                    && obj.orderStatus == (this.orderStatus)
-                    && obj.dateSendOrder == (this.dateSendOrder)
+                    && obj.orderStatus.equals (this.orderStatus)
+                    && obj.dateSendOrder.equals (this.dateSendOrder)
                 ) {
                 return true;
             } else {
@@ -89,15 +85,19 @@ public class Order implements Serializable {
         return dateCreateOrder;
     }
 
-    public void setDateCreateOrder(Date dateCreateOrder) {
-        this.dateCreateOrder = dateCreateOrder;
-    }
+//    public void setDateCreateOrder(Date dateCreateOrder) {
+//        this.dateCreateOrder = dateCreateOrder;
+//    }
 
     public String getFioCustomer() {
         return fioCustomer;
     }
 
     public void setFioCustomer(String fioCustomer) {
+//        //добавить здесь проверки (1)
+//        if (fioCustomer.isEmpty()) {
+//            throw new IllegalArgumentException("ФИО клиента не заполнено");
+//        }
         this.fioCustomer = fioCustomer;
     }
 
@@ -106,6 +106,9 @@ public class Order implements Serializable {
     }
 
     public void setCustomerPhone(String customerPhone) {
+//        if (customerPhone.isEmpty()) {
+//            throw new IllegalArgumentException("Телефон клиента не заполнен");
+//        }
         this.customerPhone = customerPhone;
     }
 
@@ -118,6 +121,9 @@ public class Order implements Serializable {
     }
 
     public String getDiscount() {
+//        if (discount.isEmpty()) {
+//            throw new IllegalArgumentException("Скидка пустая");
+//        }
         return discount;
     }
 
@@ -134,16 +140,16 @@ public class Order implements Serializable {
     }
 
     public String getOrderStatus() {
-        return orderStatus.toString(); //вызываю элементы
+        return orderStatus.toString();
     }
 
     public Date getDateSendOrder() {
         return dateSendOrder;
     }
 
-    public void setDateSendOrder(Date dateSendOrder) {
-        this.dateSendOrder = dateSendOrder;
-    }
+//    public void setDateSendOrder(Date dateSendOrder) {
+//        this.dateSendOrder = dateSendOrder;
+//    }
 
     public List<OrderPosition> getOrderPositionList() {
         return orderPositionsList;

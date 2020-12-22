@@ -80,14 +80,22 @@ public class OrdersTableModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Order o = oc.getOrder(rowIndex);
         switch (columnIndex) {
-            case 0: return o.getDateCreateOrder();
-            case 1: return o.getFioCustomer();
-            case 2: return o.getCustomerPhone();
-            case 3: return o.getCustomerAddress();
-            case 4: return o.getDiscount();
-            case 5: return o.getAmountProducts();
-            case 6: return o.getOrderStatus();
-            case 7: return o.getDateSendOrder();
+            case 0:
+                return o.getDateCreateOrder();
+            case 1:
+                return o.getFioCustomer();
+            case 2:
+                return o.getCustomerPhone();
+            case 3:
+                return o.getCustomerAddress();
+            case 4:
+                return o.getDiscount();
+            case 5:
+                return o.getAmountProducts();
+            case 6:
+                return o.getOrderStatus();
+            case 7:
+                return o.getDateSendOrder();
             case 8:
                 StringBuilder sb = new StringBuilder();
                 for (OrderPosition op : o.getOrderPositionList()) {
@@ -96,7 +104,8 @@ public class OrdersTableModel implements TableModel {
                 }
 
                 return sb.toString();
-            default: return null;
+            default:
+                return null;
 
         }
     }
@@ -118,7 +127,7 @@ public class OrdersTableModel implements TableModel {
     }
 
     private void fireTableModelEvent(TableModelEvent e) {
-        for(TableModelListener l: listeners)
+        for (TableModelListener l : listeners)
             l.tableChanged(e);
     }
 
@@ -129,10 +138,15 @@ public class OrdersTableModel implements TableModel {
         int rowNum = oc.getOrdersCount() - 1;
         fireTableModelEvent(new TableModelEvent(this, rowNum, rowNum,
                 TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
+//        if (fioCustomer == null)
+//            throw new IllegalArgumentException(fioCustomer + " is empty.");
+//        if (customerPhone == null)
+//            throw new IllegalArgumentException(customerPhone + " must contain digits only.");
     }
 
+
     public void editOrder(int index, String fioCustomer, String customerPhone,
-                           String customerAddress, String discount,  List<OrderPosition> selectedProducts) {
+                          String customerAddress, String discount, List<OrderPosition> selectedProducts) {
         Order eo = oc.getOrder(index);
         eo.setFioCustomer(fioCustomer);
         eo.setCustomerPhone(customerPhone);
@@ -140,7 +154,7 @@ public class OrdersTableModel implements TableModel {
         eo.setDiscount(discount);
         eo.setOrderPositionList(selectedProducts);
         int newAmountProducts = 0;
-        for(OrderPosition op : selectedProducts) {
+        for (OrderPosition op : selectedProducts) {
             newAmountProducts += op.getQuantity();
         }
         eo.setAmountProducts(newAmountProducts);
@@ -150,7 +164,7 @@ public class OrdersTableModel implements TableModel {
     }
 
     public void update(int row) {
-        fireTableModelEvent(new TableModelEvent(this,row, row,
+        fireTableModelEvent(new TableModelEvent(this, row, row,
                 TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
     }
 }

@@ -108,7 +108,7 @@ public class MainFrame extends JFrame {
     }
 
     private void loadProductsFromFile(ActionEvent ee) {
-        Object[] options = {"Да","Нет"};
+        Object[] options = {"Да", "Нет"};
         // Если нажали на кнопку Да, n == 0, иначе 1
         int n = JOptionPane.showOptionDialog(this,
                 "Текущий список продуктов будет заменён, продолжить?",
@@ -141,17 +141,21 @@ public class MainFrame extends JFrame {
         OrderDialog dlg = new OrderDialog(this, pc);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
-        if(dlg.isModalResult()) {
+        if (dlg.isModalResult()) {
             String fioCustomer = dlg.getFioCustomer();
             String customerPhone = dlg.getCustomerPhone();
             String customerAddress = dlg.getCustomerAddress();
             String discount = dlg.getDiscount();
 
+//            if (fioCustomer == null) { //проверку сделал в Order Dialog
+//                JOptionPane.showMessageDialog(this, "ФИО клиента не заполнено",
+//                        "Error adding Order", JOptionPane.ERROR_MESSAGE);
+//            }
             List<OrderPosition> orderPositionList = dlg.getOrderPositionList();
             try {
-                ordersTableModel.addOrders(fioCustomer,customerPhone,customerAddress,
-                        discount,OrderStatus.READY,orderPositionList);
-            } catch(Exception e) {
+                ordersTableModel.addOrders(fioCustomer, customerPhone, customerAddress,
+                        discount, OrderStatus.READY, orderPositionList);
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
                         "Error adding Order", JOptionPane.ERROR_MESSAGE);
             }
@@ -160,7 +164,7 @@ public class MainFrame extends JFrame {
 
     private void editOrder(ActionEvent ee) {
         int row = mainTable.getSelectedRow();
-        if(row == -1)
+        if (row == -1)
             return;
         Order order = oc.getOrder(row);
         if (!OrderStatus.READY.toString().equals(order.getOrderStatus())) {
@@ -168,10 +172,10 @@ public class MainFrame extends JFrame {
                     "Error adding Order", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        OrderDialog dlg = new OrderDialog(this,pc, order);
+        OrderDialog dlg = new OrderDialog(this, pc, order);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
-        if(dlg.isModalResult()) {
+        if (dlg.isModalResult()) {
             ordersTableModel.editOrder(row, dlg.getFioCustomer(), dlg.getCustomerPhone(),
                     dlg.getCustomerAddress(), dlg.getDiscount(), dlg.getOrderPositionList());
 
@@ -181,7 +185,7 @@ public class MainFrame extends JFrame {
 
     private void shipOrder(ActionEvent ee) {
         int row = mainTable.getSelectedRow();
-        if(row == -1)
+        if (row == -1)
             return;
         Order order = oc.getOrder(row);
         if (OrderStatus.READY.toString().equals(order.getOrderStatus())) {
@@ -204,7 +208,7 @@ public class MainFrame extends JFrame {
 
     private void canceldOrder() {
         int row = mainTable.getSelectedRow();
-        if(row == -1)
+        if (row == -1)
             return;
         Order order = oc.getOrder(row);
         if (OrderStatus.READY.toString().equals(order.getOrderStatus())) {

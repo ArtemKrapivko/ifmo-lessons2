@@ -13,8 +13,8 @@ public class OrdersController {
     public OrdersStorage ordersStorage = new OrdersStorage();
     private List<Order> orders = ordersStorage.loadOrdersWithDeserialization(Config.PATH_ORDERS);
 
-    private List<Order> clients = new ArrayList<>();
-    private Set<Order> order = new HashSet<>();
+//    private List<Order> clients = new ArrayList<>();
+//    private Set<Order> order = new HashSet<>();
 
 
     public void add(String fioCustomer, String customerPhone, String customerAddress, String discount,
@@ -27,13 +27,13 @@ public class OrdersController {
                 new Date(), orderPositionList));
     }
 
-    public List<Order> loadOrders() {
-        return ordersStorage.loadOrdersWithDeserialization(Config.PATH_ORDERS);
-    }
-
-    public void remove(int index) {
-        Order c = orders.remove(index);
-    }
+//    public List<Order> loadOrders() {
+//        return ordersStorage.loadOrdersWithDeserialization(Config.PATH_ORDERS);
+//    }
+//
+//    public void remove(int index) {
+//        Order c = orders.remove(index);
+//    }
 
 
     public void save() throws IOException {

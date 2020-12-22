@@ -61,7 +61,7 @@ public class OrderDialog extends JDialog {
         p.add(new JLabel("Скидка "));
         discount = new JTextField(10);
         p.add(discount);
-        topPanel.add(p);
+      //  topPanel.add(p);
 
         p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.add(new JLabel("Позиции заказа "));
@@ -71,7 +71,28 @@ public class OrderDialog extends JDialog {
 
         p = new JPanel();
         JButton btn = new JButton("OK");
-        btn.addActionListener(e -> {
+        btn.addActionListener(e -> {//добавить проверки (2)
+            if (fioCustomer.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "ФИО клиента не заполнено",
+                        "Error adding Order", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else if (customerPhone.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Телефон клиента не заполнен",
+                        "Error adding Order", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else if (customerAddress.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Адрес клиента не заполнен",
+                        "Error adding Order", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                for (int i = 0; i < customerPhone.getText().length(); i++) {
+                    if (!Character.isDigit(customerPhone.getText().charAt(i))) {
+                        JOptionPane.showMessageDialog(this, "Телефон клиента только цифры",
+                                "Error adding Order", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            }
             modalResult = true;
             dispose();
         });
@@ -124,7 +145,6 @@ public class OrderDialog extends JDialog {
         getContentPane().add(topPanel, BorderLayout.CENTER);
 
 
-
         setResizable(false);
         pack();
     }
@@ -169,14 +189,14 @@ public class OrderDialog extends JDialog {
     public void addProductToOrder(ActionEvent ee) {
         String selectedItem = (String) this.listProducts.getSelectedValue();
         if (selectedItem == null) {
-            JOptionPane.showMessageDialog(this,"Не выбран товар",
+            JOptionPane.showMessageDialog(this, "Не выбран товар",
                     "Error adding Order", JOptionPane.ERROR_MESSAGE);
             return;
         }
         long vendorCode = Long.valueOf(selectedItem.split(";")[0]);
         for (OrderPosition op : orderPositionTabModel.getOrderPositionList()) {
             if (op.getProduct().getVendorCode() == vendorCode) {
-                JOptionPane.showMessageDialog(this,"Такой продукт уже был добавлен!",
+                JOptionPane.showMessageDialog(this, "Такой продукт уже был добавлен!",
                         "Error adding Order", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -184,12 +204,12 @@ public class OrderDialog extends JDialog {
 
         Product p = productController.searchProductByVendorCode(vendorCode);
 
-        int requestedAmount = Integer.valueOf(amountProducts.getText() == null||amountProducts.getText().isEmpty() ? "0" : amountProducts.getText());
+        int requestedAmount = Integer.valueOf(amountProducts.getText() == null || amountProducts.getText().isEmpty() ? "0" : amountProducts.getText());
         if (requestedAmount < 1 || amountProducts == null) {
-            JOptionPane.showMessageDialog(this,"Количество меньше единицы, меньше",
+            JOptionPane.showMessageDialog(this, "Количество меньше единицы",
                     "Error adding Order", JOptionPane.ERROR_MESSAGE);
         } else if (requestedAmount > p.getStockQuantity()) {
-            JOptionPane.showMessageDialog(this,"На складе нет столько товара, уменьшите количество",
+            JOptionPane.showMessageDialog(this, "На складе нет столько товара, уменьшите количество",
                     "Error adding Order", JOptionPane.ERROR_MESSAGE);
         } else {
             double newProductPrice = p.getProductPrice().subtract(
@@ -200,7 +220,7 @@ public class OrderDialog extends JDialog {
 
     private void decreasedAmountToSelectedProduct(ActionEvent actionEvent) {
         int row = selectedProductsInOrder.getSelectedRow();
-        if(row == -1)
+        if (row == -1)
             return;
         OrderPosition op = orderPositionTabModel.getOrderPosition(row);
         if (op.getQuantity() - 1 == 0) {
@@ -213,11 +233,11 @@ public class OrderDialog extends JDialog {
 
     private void addAmountToSelectedProduct(ActionEvent actionEvent) {
         int row = selectedProductsInOrder.getSelectedRow();
-        if(row == -1)
+        if (row == -1)
             return;
         OrderPosition op = orderPositionTabModel.getOrderPosition(row);
         if (op.getProduct().getStockQuantity() - op.getQuantity() - 1 < 0) {
-            JOptionPane.showMessageDialog(this,"На складе нет столько товара, уменьшите количество",
+            JOptionPane.showMessageDialog(this, "На складе нет столько товара, уменьшите количество",
                     "Error adding Order", JOptionPane.ERROR_MESSAGE);
         } else {
             op.setQuantity(op.getQuantity() + 1);
