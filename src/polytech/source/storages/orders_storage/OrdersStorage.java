@@ -23,36 +23,31 @@ import static resources.configs.Config.PATH_ORDERS;
 
 public class OrdersStorage {
 
-    public void createOrder(Order create) throws IOException {
-        Set<BasicFileAttributes> params = new HashSet<>();
-        Path savePath = Paths.get(PATH_ORDERS);
-
-        if (Files.exists(savePath)) {
-            System.out.println("File is exist");
-        } else {
-            Files.createFile(savePath);
-        }
-    }
-
     public void saveOrders(List<Order> orders) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(PATH_ORDERS))) {
-            oos.writeObject(orders);
+            for (Order o : orders) {
+                oos.writeObject(o);
+            }
         }
     }
 
-
-//        Path myPath = Paths.get(PATH_ORDERS);
-//        List<String> line = new ArrayList<>();
-//        Files.write(myPath, line, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
-//        System.out.println("Data written");
-//    }
-
-
-    public List<Order> loadOrders() throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(PATH_ORDERS))) {
-            return (List<Order>) ois.readObject();
+    public List<Order> loadOrdersWithDeserialization(String filePath) {
+        List<Order> ordersList = new ArrayList<>();
+        if (Files.exists(Paths.get(PATH_ORDERS))) {
+            try (ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream(filePath))) {
+                Order o = (Order)ois.readObject();
+                while(o != null) {
+                    ordersList.add(o);
+                    o = (Order)ois.readObject();
+                }
+                return ordersList;
+            } catch(Exception ex) {
+                return ordersList;
+            }
+        } else {
+            return ordersList;
         }
     }
 }

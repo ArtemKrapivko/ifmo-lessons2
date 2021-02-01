@@ -1,8 +1,10 @@
 package polytech.source.models;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Product {
+public class Product implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private long vendorCode;
     private String productName;
     private String productColor;
@@ -17,37 +19,52 @@ public class Product {
         this.stockQuantity = stockQuantity;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(vendorCode);
+        sb.append(";");
+        sb.append(productName);
+        sb.append(";");
+        sb.append(productPrice.toString());
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (o instanceof Product) {
+            Product obj = (Product) o;
+            if (obj.vendorCode == this.vendorCode
+                    && obj.productName.equals(this.productName)
+                    && obj.productPrice.equals(this.productPrice)
+                    && obj.stockQuantity == this.stockQuantity) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+
+    }
 
     public long getVendorCode() {
         return vendorCode;
-    }
-
-    public void setVendorCode(long vendorCode) {
-        this.vendorCode = vendorCode;
     }
 
     public String getProductName() {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public String getProductColor() {
         return productColor;
     }
 
-    public void setProductColor(String productColor) {
-        this.productColor = productColor;
-    }
-
     public BigDecimal getProductPrice() {
         return productPrice;
-    }
-
-    public void setProductPrice(BigDecimal productPrice) {
-        this.productPrice = productPrice;
     }
 
     public int getStockQuantity() {
@@ -58,23 +75,5 @@ public class Product {
         this.stockQuantity = stockQuantity;
     }
 
-//    @Override
-//    public List<Product> loadObjects(String path) throws IOException {
-//        List<Product> productsList = new ArrayList<>(); //создаем список пустой
-//        FileReader reader = new FileReader(path);
-//        BufferedReader bufferedReader = new BufferedReader(reader);
-//        while (bufferedReader.ready()) {
-//            String row = bufferedReader.readLine();
-//            String[] splittedRow = row.split(";"); //из списка продуктов получил элементы
-//            long vendorCode = Long.valueOf(splittedRow[0]);
-//            String productName = splittedRow[1];
-//            String productColor = splittedRow[2];
-//            BigDecimal productPrice = new BigDecimal(splittedRow[3]);
-//            int stockQuantity = Integer.valueOf(splittedRow[4]);
-//            Product product = new Product(vendorCode, productName, productColor, productPrice, stockQuantity);
-//            productsList.add(product);
-//        }
-//        bufferedReader.close();
-//        return productsList;
-//    }
+
 }

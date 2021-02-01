@@ -1,52 +1,114 @@
 package polytech.source.models;
 
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-
-    private LocalDate dateCreateOrder;
+    private Date dateCreateOrder;
     private String fioCustomer;
-    private int customerPhone;
+    private String customerPhone;
     private String customerAddress;
-    private int discount;
+    private String discount;
+    private int amountProducts;
+
     private OrderStatus orderStatus;
-    private LocalDate dateSendOrder;
-    private OrderPosition OrderPosition; //OrderPosition - product, price, quantity
 
+    private Date dateSendOrder;
+    private List<OrderPosition> orderPositionsList;
 
-    public Order(LocalDate dateCreateOrder, String fioCustomer, int customerPhone, String customerAddress, int discount, OrderStatus orderStatus, LocalDate dateSendOrder, OrderPosition orderPosition) {
+    public Order(Date dateCreateOrder, String fioCustomer, String customerPhone, String customerAddress,
+                 String discount, int amountProducts, OrderStatus orderStatus, Date dateSendOrder, List<OrderPosition> orderPositionList) {
         this.dateCreateOrder = dateCreateOrder;
         this.fioCustomer = fioCustomer;
         this.customerPhone = customerPhone;
         this.customerAddress = customerAddress;
         this.discount = discount;
+        this.amountProducts = amountProducts;
         this.orderStatus = orderStatus;
         this.dateSendOrder = dateSendOrder;
-        OrderPosition = orderPosition;
+        this.orderPositionsList = orderPositionList;
     }
 
-    public LocalDate getDateCreateOrder() {
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dateCreateOrder.toString());
+        sb.append(";");
+        sb.append(fioCustomer);
+        sb.append(";");
+        sb.append(customerPhone);
+        sb.append(";");
+        sb.append(customerAddress);
+        sb.append(";");
+        sb.append(discount);
+        sb.append(";");
+        sb.append(amountProducts);
+        sb.append(";");
+        sb.append(orderStatus);
+        sb.append(";");
+        sb.append(dateSendOrder.toString());
+        sb.append(";");
+        sb.append(orderPositionsList);
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (o instanceof Order) {
+            Order obj = (Order) o;
+            if (obj.dateCreateOrder == this.dateCreateOrder
+                    && obj.fioCustomer.equals(this.fioCustomer) //или здесь проверку (вместо сеттера)
+                    && obj.customerPhone.equals(this.customerPhone)
+                    && obj.customerAddress.equals (this.customerAddress)
+                    && obj.discount.equals (this.discount)
+                    && obj.amountProducts == (this.amountProducts)
+                    && obj.orderStatus.equals (this.orderStatus)
+                    && obj.dateSendOrder.equals (this.dateSendOrder)
+                ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+
+    }
+
+    public Date getDateCreateOrder() {
         return dateCreateOrder;
     }
 
-    public void setDateCreateOrder(LocalDate dateCreateOrder) {
-        this.dateCreateOrder = dateCreateOrder;
-    }
+//    public void setDateCreateOrder(Date dateCreateOrder) {
+//        this.dateCreateOrder = dateCreateOrder;
+//    }
 
     public String getFioCustomer() {
         return fioCustomer;
     }
 
     public void setFioCustomer(String fioCustomer) {
+//        //добавить здесь проверки (1)
+//        if (fioCustomer.isEmpty()) {
+//            throw new IllegalArgumentException("ФИО клиента не заполнено");
+//        }
         this.fioCustomer = fioCustomer;
     }
 
-    public int getCustomerPhone() {
+    public String getCustomerPhone() {
         return customerPhone;
     }
 
-    public void setCustomerPhone(int customerPhone) {
+    public void setCustomerPhone(String customerPhone) {
+//        if (customerPhone.isEmpty()) {
+//            throw new IllegalArgumentException("Телефон клиента не заполнен");
+//        }
         this.customerPhone = customerPhone;
     }
 
@@ -58,52 +120,49 @@ public class Order {
         this.customerAddress = customerAddress;
     }
 
-    public int getDiscount() {
+    public String getDiscount() {
+//        if (discount.isEmpty()) {
+//            throw new IllegalArgumentException("Скидка пустая");
+//        }
         return discount;
     }
 
-    public void setDiscount(int discount) {
+    public int getAmountProducts() {
+        return amountProducts;
+    }
+
+    public void setDiscount(String discount) {
         this.discount = discount;
     }
 
-    public String getOrderStatus() {
-        return orderStatus.toString(); //вызываю элементы
+    public void setAmountProducts(int amountProducts) {
+        this.amountProducts = amountProducts;
     }
 
-    public LocalDate getDateSendOrder() {
+    public String getOrderStatus() {
+        return orderStatus.toString();
+    }
+
+    public Date getDateSendOrder() {
         return dateSendOrder;
     }
 
-    public void setDateSendOrder(LocalDate dateSendOrder) {
-        this.dateSendOrder = dateSendOrder;
-    }
-
-    public OrderPosition getOrderPosition() {
-        return OrderPosition;
-    }
-
-    public void setOrderPosition(OrderPosition orderPosition) {
-        OrderPosition = orderPosition;
-    }
-
-//    @Override
-//    public List<Orders> loadObjects(String path) throws IOException {
-//        List<Orders> ordersList = new ArrayList<>(); //создаем список пустой
-//        FileReader reader = new FileReader(path);
-//        BufferedReader bufferedReader = new BufferedReader(reader);
-//        while (bufferedReader.ready()) {
-//            String row = bufferedReader.readLine();
-//            String[] splittedRow = row.split(";",6); //из списка продуктов получил элементы
-////            long vendorCode = Long.valueOf(splittedRow[0]);
-////            String productName = splittedRow[1];
-////            String productColor = splittedRow[2];
-////            BigDecimal productPrice = new BigDecimal(splittedRow[3]);
-////            int stockQuantity = Integer.valueOf(splittedRow[4]);
-////            Product orders = new Product(vendorCode, productName, productColor, productPrice, stockQuantity);
-////            ordersList.add(orders);
-//        }
-//        bufferedReader.close();
-//        return ordersList;
+//    public void setDateSendOrder(Date dateSendOrder) {
+//        this.dateSendOrder = dateSendOrder;
 //    }
+
+    public List<OrderPosition> getOrderPositionList() {
+        return orderPositionsList;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public void setOrderPositionList(List<OrderPosition> selectedProducts) {
+        this.orderPositionsList = selectedProducts;
+    }
+
+
 }
 
